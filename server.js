@@ -7,6 +7,11 @@ import authRoutes from "./routes/authRoutes.js";
 import tweetRoutes from "./routes/tweetRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import colors from "colors";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // port
 const PORT = process.env.PORT || 5080;

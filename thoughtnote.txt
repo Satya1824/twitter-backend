@@ -1,0 +1,7 @@
+I have used a dark theme for this project. I have made it responsive. 
+I have added isReply to the tweet schema to differentiate between rplies and tweets.
+In the .env file add varibles 
+JWT_SECRECT = your secret key
+MONGO_URL = mongodb+srv://satyaprakash:12345@cluster1.vbrg39n.mongodb.net/twitter-clone
+
+can use my mongodb url.

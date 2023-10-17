@@ -3,7 +3,6 @@ import {
   createTweet,
   getAllTweets,
   getTweetById,
-  // updateTweet,
   deleteTweet,
   likeTweetController,
   dislikeTweetController,
@@ -11,7 +10,6 @@ import {
   getRepliesByTweetId,
   retweetController,
   getRetweetController,
-  // getUserTweets,
 } from "../controllers/tweetController.js";
 import { requireSignIn } from "../middlewares/authMiddleware.js";
 
@@ -19,17 +17,17 @@ import multer from "multer";
 
 const upload = multer({ dest: "uploads/" });
 
+// router object
 const router = express.Router();
 
-// Create a new tweet (requires authentication)
+// routes
+// Create a new tweet
 router.post(
   "/create-tweet",
-  requireSignIn, // Middleware for authentication
-  upload.single("image"), // Handle image upload
+  requireSignIn,
+  upload.single("image"),
   createTweet
 );
-
-// router.get("/tweets", getUserTweets);
 
 // Get all tweets
 router.get("/get-tweets", getAllTweets);
@@ -37,22 +35,25 @@ router.get("/get-tweets", getAllTweets);
 // Get a single tweet by ID
 router.get("/get-tweet/:id", getTweetById);
 
-// // Update a tweet by ID (requires authentication)
-// router.put("/update-tweet/:id", requireSignIn, updateTweet);
-
 // Delete a tweet by ID (requires authentication)
 router.delete("/delete-tweet/:id", requireSignIn, deleteTweet);
 
+// like a tweet
 router.post("/like/:id", requireSignIn, likeTweetController);
 
+// dislike a tweet
 router.post("/dislike/:id", requireSignIn, dislikeTweetController);
 
+// reply to a tweet
 router.post("/reply/:id", requireSignIn, upload.none(), createReplyController);
 
+// get tweet replies
 router.get("/tweet-replies/:id", requireSignIn, getRepliesByTweetId);
 
+// retweet a tweet
 router.post("/retweet/:id", requireSignIn, retweetController);
 
+// get retweet
 router.get("/get-retweet/:id", getRetweetController);
 
 export default router;

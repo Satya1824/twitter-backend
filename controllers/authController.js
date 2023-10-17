@@ -3,6 +3,7 @@ import userModel from "../models/userModel.js";
 import { comparePassword, hashPassword } from "./../helpers/authHelper.js";
 import JWT from "jsonwebtoken";
 
+//register user controller
 export const registerController = async (req, res) => {
   try {
     const { name, email, username, password } = req.body;
@@ -42,6 +43,7 @@ export const registerController = async (req, res) => {
 
     //register user
     const hashedPassword = await hashPassword(password);
+
     //save
     const user = await new userModel({
       name,
@@ -65,11 +67,11 @@ export const registerController = async (req, res) => {
   }
 };
 
-//POST LOGIN
+//login controller
 export const loginController = async (req, res) => {
   try {
     const { username, password } = req.body;
-    //validation
+    //validations
     if (!username || !password) {
       return res.status(404).send({
         success: false,
@@ -119,95 +121,6 @@ export const loginController = async (req, res) => {
     res.status(500).send({
       success: false,
       message: "Error in login!",
-      error,
-    });
-  }
-};
-
-//test controller
-export const testController = (req, res) => {
-  try {
-    res.send("Protected routes!");
-  } catch (error) {
-    console.log(error);
-    res.send({ error });
-  }
-};
-
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "profiles/");
-//   },
-//   filename: (req, file, cb) => {
-//     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-//     const fileExtension = path.extname(file.originalname);
-//     cb(null, uniqueSuffix + fileExtension);
-//   },
-// });
-
-// const upload = multer({ storage });
-
-// export const updateProfileImgController = async (req, res) => {
-//   try {
-//     const userId = req.user._id;
-//     const profileImg = req.file;
-
-//     if (!profileImg) {
-//       return res
-//         .status(400)
-//         .json({ success: false, message: "No image uploaded!" });
-//     }
-
-//     // Update the user's profile picture URL in the database
-//     const updatedUser = await userModel.findByIdAndUpdate(
-//       userId,
-//       { profileImg: profileImg.path },
-//       { new: true }
-//     );
-
-//     if (!updatedUser) {
-//       return res
-//         .status(404)
-//         .json({ success: false, message: "User not found!" });
-//     }
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "Profile picture updated!",
-//       user: updatedUser,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     return res
-//       .status(500)
-//       .json({ success: false, message: "Error updating profile picture!" });
-//   }
-// };
-
-//update prfole
-export const updateProfileController = async (req, res) => {
-  try {
-    const { name, email, username, password, location, dob } = req.body;
-    const user = await userModel.findById(req.user._id);
-    const updatedUser = await userModel.findByIdAndUpdate(
-      req.user._id,
-      {
-        name: name || user.name,
-        location: location || user.location,
-        dob: dob || user.dob,
-      },
-      { new: true }
-    );
-    res.status(200).send({
-      success: true,
-      message: "Profile updated successfully!",
-      updatedUser,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(400).send({
-      success: false,
-      message: "Error while updating profile!",
       error,
     });
   }

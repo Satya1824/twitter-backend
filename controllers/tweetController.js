@@ -6,7 +6,7 @@ import path from "path";
 // Define the storage engine and file name
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Specify the upload directory
+    cb(null, "uploads/");
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
@@ -18,40 +18,7 @@ const storage = multer.diskStorage({
 // Create the multer middleware
 const upload = multer({ storage: storage });
 
-// Create a new tweet
-// export const createTweet = async (req, res) => {
-//   try {
-//     const { text } = req.body;
-//     const user = req.user;
-
-//     const tweet = new Tweet({
-//       text,
-//       user,
-//     });
-
-//     // Check if there's an uploaded image
-//     if (req.file) {
-//       tweet.image = req.file.path; // Store the image path in the Tweet model
-//     }
-
-//     await tweet.save();
-
-//     res.status(201).json({
-//       success: true,
-//       message: "Tweet posted!",
-//       tweet,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Error in posting tweet!",
-//       error: error.message,
-//     });
-//   }
-// };
-
-// Create a new tweet
+// Create tweet controller
 export const createTweet = async (req, res) => {
   try {
     const { text } = req.body;
@@ -76,7 +43,7 @@ export const createTweet = async (req, res) => {
 
     await tweet.save();
 
-    console.log("isReply:", tweet.isReply);
+    // console.log("isReply:", tweet.isReply);
 
     res.status(201).json({
       success: true,
@@ -93,7 +60,7 @@ export const createTweet = async (req, res) => {
   }
 };
 
-// // Get all tweets
+// // Get all tweets controller
 export const getAllTweets = async (req, res) => {
   try {
     const excludeReplies = req.query.excludeReplies === "true";
@@ -108,8 +75,6 @@ export const getAllTweets = async (req, res) => {
       tweets = await Tweet.find().populate("user").sort({ createdAt: -1 });
     }
 
-    // const tweets = await Tweet.find().populate("user").sort({ createdAt: -1 });
-
     res.status(200).json({
       success: true,
       tweets,
@@ -123,53 +88,6 @@ export const getAllTweets = async (req, res) => {
     });
   }
 };
-
-// export const getAllTweets = async (req, res) => {
-//   try {
-//     const userId = req.user._id; // Assuming you have access to the user ID
-//     const tweets = await Tweet.find().populate("user").sort({ createdAt: -1 });
-
-//     // For each tweet, check if the user has liked it and add a 'liked' property
-//     const tweetsWithLikedStatus = tweets.map((tweet) => ({
-//       ...tweet,
-//       liked: tweet.likes.includes(userId),
-//     }));
-
-//     res.status(200).json({
-//       success: true,
-//       tweets: tweetsWithLikedStatus,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Error in retrieving tweets!",
-//       error: error.message,
-//     });
-//   }
-// };
-
-// // Get all tweets for the logged-in user
-// export const getUserTweets = async (req, res) => {
-//   try {
-//     const user = req.user;
-//     const tweets = await Tweet.find({ user })
-//       .populate("user")
-//       .sort({ createdAt: -1 });
-
-//     res.status(200).json({
-//       success: true,
-//       tweets,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Error in retrieving user tweets!",
-//       error: error.message,
-//     });
-//   }
-// };
 
 // Get a single tweet by ID
 export const getTweetById = async (req, res) => {
@@ -198,71 +116,11 @@ export const getTweetById = async (req, res) => {
   }
 };
 
-// // Update a tweet by ID
-// export const updateTweet = async (req, res) => {
-//   try {
-//     const tweetId = req.params.id;
-//     const { text } = req.body;
-//     const tweet = await Tweet.findByIdAndUpdate(
-//       tweetId,
-//       { text },
-//       { new: true }
-//     );
-
-//     if (!tweet) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Tweet not found!",
-//       });
-//     }
-
-//     res.status(200).json({
-//       success: true,
-//       message: "Tweet updated!",
-//       tweet,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Error updating the tweet!",
-//       error: error.message,
-//     });
-//   }
-// };
-
-// Delete a tweet by ID
-// export const deleteTweet = async (req, res) => {
-//   try {
-//     const tweetId = req.params.id;
-//     const tweet = await Tweet.findByIdAndDelete(tweetId);
-
-//     if (!tweet) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Tweet not found!",
-//       });
-//     }
-
-//     res.status(200).json({
-//       success: true,
-//       message: "Tweet deleted!",
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Error in deleting tweet!",
-//       error: error.message,
-//     });
-//   }
-// };
+//delete tweet controller
 
 export const deleteTweet = async (req, res) => {
   try {
     const tweetId = req.params.id;
-
-    // Use findByIdAndDelete to find and delete the tweet
     const deletedTweet = await Tweet.findByIdAndDelete(tweetId);
 
     if (!deletedTweet) {
@@ -304,7 +162,6 @@ export const likeTweetController = async (req, res) => {
     const userId = req.user._id;
     const tweetId = req.params.id;
 
-    // Find the tweet by its ID
     const tweet = await Tweet.findById(tweetId);
 
     if (!tweet) {
@@ -322,10 +179,7 @@ export const likeTweetController = async (req, res) => {
       });
     }
 
-    // Add the user's ID to the likes array
     tweet.likes.push(userId);
-
-    // Save the tweet document to update the likes
     await tweet.save();
 
     res.status(200).json({
@@ -348,7 +202,6 @@ export const dislikeTweetController = async (req, res) => {
     const userId = req.user._id;
     const tweetId = req.params.id;
 
-    // Find the tweet by its ID
     const tweet = await Tweet.findById(tweetId);
 
     if (!tweet) {
@@ -358,10 +211,7 @@ export const dislikeTweetController = async (req, res) => {
       });
     }
 
-    // Remove the user's ID from the likes array
-    tweet.likes.pull(userId); // Use the "pull" method to remove the user's ID
-
-    // Save the tweet document to update the likes
+    tweet.likes.pull(userId);
     await tweet.save();
 
     res.status(200).json({
@@ -378,7 +228,7 @@ export const dislikeTweetController = async (req, res) => {
   }
 };
 
-// replies
+// replies controller
 export const createReplyController = async (req, res) => {
   try {
     const tweetId = req.params.id;
@@ -400,7 +250,6 @@ export const createReplyController = async (req, res) => {
     });
 
     await reply.save();
-
     const parentTweet = await Tweet.findById(tweetId);
 
     if (!parentTweet) {
@@ -428,11 +277,11 @@ export const createReplyController = async (req, res) => {
   }
 };
 
+// get replies controller
+
 export const getRepliesByTweetId = async (req, res) => {
   try {
     const tweetId = req.params.id;
-
-    // Find the tweet by its ID
     const tweet = await Tweet.findById(tweetId).populate({
       path: "replies",
       options: { sort: { createdAt: -1 } },
@@ -445,7 +294,6 @@ export const getRepliesByTweetId = async (req, res) => {
       });
     }
 
-    // Extract and return the replies
     const replies = tweet.replies;
 
     res.status(200).json({
@@ -486,18 +334,21 @@ export const retweetController = async (req, res) => {
       });
     }
 
+    // Check if the user has already retweeted the tweet
+    if (tweet.retweets.includes(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: "User has already retweeted this tweet!",
+      });
+    }
+
     // Add the user's ID to the retweets array
     tweet.retweets.push(userId);
     await tweet.save();
 
-    // Get the last user who retweeted (assuming you have a `username` field in your User model)
-    // const lastRetweetUserId = tweet.retweets[tweet.retweets.length - 1];
-    // const lastRetweetUser = await Users.findById(lastRetweetUserId);
-
     res.status(200).json({
       success: true,
       message: "Tweet retweeted!",
-      // lastRetweetUsername: lastRetweetUser.username,
     });
   } catch (error) {
     console.error(error);
@@ -523,7 +374,7 @@ export const getRetweetController = async (req, res) => {
     }
 
     // Extract and return the user ID of the last retweeter
-    const lastRetweetUserId = tweet.retweets[tweet.retweets.length - 1]; // Assuming the latest retweet is at the first position
+    const lastRetweetUserId = tweet.retweets[tweet.retweets.length - 1];
 
     if (!lastRetweetUserId) {
       return res.status(404).json({
@@ -542,7 +393,7 @@ export const getRetweetController = async (req, res) => {
       });
     }
 
-    const lastRetweeterUsername = lastRetweeterUser.username; // Assuming the username field exists in your user schema
+    const lastRetweeterUsername = lastRetweeterUser.username;
 
     res.status(200).json({
       success: true,
